@@ -423,14 +423,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .show());
 
             }).on("CANCEL_ALARM_EVENT", args -> {
+                // show dialog
                 MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Alarm canceled")
-                        .setMessage("This request has been canceled by ots sender")
+                        .setMessage("This request has been canceled by its sender")
                         .setPositiveButton("Ok", (dialog, which) -> {
                         })
                         .show());
-
+                // hide bottom sheet
+                sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             }).on("BAD_REQUEST_EVENT", args -> {
 
 
