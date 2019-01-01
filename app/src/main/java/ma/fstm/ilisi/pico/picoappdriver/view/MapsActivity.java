@@ -354,7 +354,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // display msg in log
                 Log.e("NEW_ALARM_EVENT","");
                 if(args != null)
-                    // change 
+                    // change Bottom sheet content
                     setBottomSheetContent("newAlarm",(JSONObject)args[0]);
 
             }).on("CITIZEN_POSITION_CHANGE_EVENT", args -> {
