@@ -114,30 +114,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
 
        Button  bs_btn_book = findViewById(R.id.bs_Book);
-        ((Button)findViewById(R.id.bs_Cancel)).setVisibility(View.INVISIBLE);
-        ((Button)findViewById(R.id.bs_Cancel)).setEnabled(false);
         // once the app is launched close the bottom sheet
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
        bs_btn_book.setOnClickListener(v -> {
            Log.e("Ambulance booked","A");
-        //   if(nearestAmbulance != null);
-          /* ambulanceViewModel.doBookAnAmbulance(nearestAmbulance,
-                   MapsActivity.this).observe(MapsActivity.this,driver -> {
-               Log.e("an ambulance ","is booked ");
-               if(driver != null){
-                   v.setEnabled(false);
-                   ((Button)v).setText("Wating ...");
-                   ((Button)findViewById(R.id.bs_Cancel)).setVisibility(View.VISIBLE);
-                   ((Button)findViewById(R.id.bs_Cancel)).setEnabled(true);
-                   Toast.makeText(MapsActivity.this,
-                           "You have booked an ambulance",Toast.LENGTH_LONG);
-                   Log.e("alarm ID ",driver);
-                       /*Intent intent = new Intent(AmbulanceDetailActivity.this,MapsActivity.class);
-                       intent.putExtra("driver",driver);
-                       AmbulanceDetailActivity.this.startActivity(intent);
-               }
-           });*/
+
        });
         /**
          * bottom sheet state change listener
@@ -150,57 +132,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     case BottomSheetBehavior.STATE_HIDDEN:
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED: {
-                     /*   if(!isAmbBooked) {
-                            if (!hospitalMarkerHash.isEmpty()) {
-                                LinkedHashMap<Hospital, Float> hmHospitals = getNearestHospital();
-                                Map.Entry<Hospital, Float> nearestHospital = null;
-                                if (hmHospitals != null) {
-                                    nearestHospital = hmHospitals.entrySet().iterator().next();
-                                }
-                                if (nearestHospital != null) {
-                                    setBottomSheetContent("hospital");
-                                    ((TextView) findViewById(R.id.bs_hospitalName)).setText(nearestHospital.getKey().getName());
-                                    ((TextView) findViewById(R.id.bs_distance)).setText("Dist : " + nearestHospital.getValue() + "");
-                                   // ambulanceViewModel = ViewModelProviders.of(MapsActivity.this).get(AmbulanceViewModel.class);
 
-                                    Hospital h = nearestHospital.getKey();
-                                   /* ambulanceViewModel.onRefreshClicked(h)
-                                            .observe(MapsActivity.this, ambulances -> {
-                                                if (ambulances != null) {
-                                                    if (!ambulances.isEmpty()) {
-                                                        nearestAmbulance = ambulances.get(0);
-                                                        RatingBar tb = findViewById(R.id.bs_ratingBar);
-                                                        Double rate = nearestAmbulance.getRating();
-                                                        if (rate == null)
-                                                            tb.setRating(0);
-                                                        else
-                                                            tb.setRating(Float.valueOf(rate + "") * 5);
-                                                        Log.e("rating ", rate + "");
-                                                        ((TextView) findViewById(R.id.bs_amb_RN)).setText("Registration number : " + nearestAmbulance.getRegistrationNumber());
-                                                        // get image from the api
-                                                        new DownloadImageTask((ImageView) findViewById(R.id.bs_imageView))
-                                                                .execute(ConfigClass.buildUrl("ambulances", nearestAmbulance.getId()));
-                                                    }
-                                                }
-                                            });
-                                }
-                            }
-                        }
-                        else{
-                            if(driver != null ){
-                                setBottomSheetContent("driver");
-                                ((TextView) findViewById(R.id.bs_amb_RN)).setText("Driver name : "+driver.getDriverFullName());
-                                // get image from the api
-                                new DownloadImageTask((ImageView) findViewById(R.id.bs_imageView))
-                                        .execute(ConfigClass.buildUrl("drivers",driver.getDriverId()));
-                            }*/
-                        //}
-//                        btnBottomSheet.setText("Close Sheet");
 
                     }
                     break;
                     case BottomSheetBehavior.STATE_COLLAPSED: {
-         //               btnBottomSheet.setText("Expand Sheet");
+                         //  btnBottomSheet.setText("Expand Sheet");
                     }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
@@ -220,59 +157,51 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
     private void setBottomSheetContent(String type, JSONObject obj){
-        try {
-            // update Citizen Position
-            ((TextView)findViewById(R.id.bs_distance)).setText(
-                    "Loc( "+obj.getString("latitude")+","
-                            +obj.getString("longitude")+")");
-            // update Citizen name
-            ((TextView)findViewById(R.id.bs_amb_RN)).setText("Citizen name : "+obj.getString("full_name"));
-            // update the image
-            new DownloadImageTask(findViewById(R.id.bs_imageView))
-                    .execute(ConfigClass.buildUrl("citizens",obj.getString("citizen_id")));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        switch (type){
-            case "newAlarm" :
+        runOnUiThread(()->{
+            try {
+                // update Citizen Position
+                ((TextView)findViewById(R.id.bs_distance)).setText(
+                        "Loc( "+obj.getString("latitude")+","
+                                +obj.getString("longitude")+")");
+                // update Citizen name
+                ((TextView)findViewById(R.id.bs_amb_RN)).setText("Citizen name : "+obj.getString("full_name"));
+                // update the image
+                new DownloadImageTask(findViewById(R.id.bs_imageView))
+                        .execute(ConfigClass.buildUrl("citizens",obj.getString("citizen_id")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            switch (type){
+                case "newAlarm" :
                 {
                     // set Title
                     ((TextView)findViewById(R.id.bs_Title)).setText("New request");
                     // set Subtitle
                     ((TextView)findViewById(R.id.bs_Subtitle)).setText("Citizen");
-                    // set button to disabled and invisible
-                    // ((Button)findViewById(R.id.bs_Book)).setVisibility(View.VISIBLE);
-                    //((Button)findViewById(R.id.bs_Book)).setEnabled(true);
-
+                    // set  content message
+                    ((TextView)findViewById(R.id.bs_hospitalName)).setText(" citizen is calling for your service..");
+                    // set buttons texts
                     ((Button)findViewById(R.id.bs_Book)).setText("Approve");
                     ((Button)findViewById(R.id.bs_Cancel)).setText("Reject");
-
-
                 }
-                 break;
-            case "onMission"  :
-            {
-                // set Title
-                ((TextView)findViewById(R.id.bs_Title)).setText("On mission");
-                // set Subtitle
-                ((TextView)findViewById(R.id.bs_Subtitle)).setText("Citizen");
-                (findViewById(R.id.bs_distance)).setVisibility(View.INVISIBLE);
-                //
-                ((TextView)findViewById(R.id.bs_hospitalName)).setText("Status :  Mission en cours ..");
-                // set button to disabled and invisible
-                //((Button)findViewById(R.id.bs_Book)).setVisibility(View.INVISIBLE);
-                //((Button)findViewById(R.id.bs_Book)).setEnabled(false);
+                break;
+                case "onMission"  :
+                {
+                    // set Title
+                    ((TextView)findViewById(R.id.bs_Title)).setText("On mission");
+                    // set Subtitle
+                    ((TextView)findViewById(R.id.bs_Subtitle)).setText("Citizen");
+                    (findViewById(R.id.bs_distance)).setVisibility(View.INVISIBLE);
+                    // set content message
+                    ((TextView)findViewById(R.id.bs_hospitalName)).setText("Status :  Mission en cours ..");
+                    // set buttons text
+                    ((Button)findViewById(R.id.bs_Book)).setText("Mission accomplished");
+                    ((Button)findViewById(R.id.bs_Cancel)).setText("Fake Alarm");
+                } break;
+            }
 
-                //((Button)findViewById(R.id.bs_Cancel)).setVisibility(View.INVISIBLE);
-                //((Button)findViewById(R.id.bs_Cancel)).setEnabled(false);
-                ((Button)findViewById(R.id.bs_Book)).setText("Mission accomplished");
-                ((Button)findViewById(R.id.bs_Cancel)).setText("Fake Alarm");
+        });
 
-
-
-
-            } break;
-        }
 
     }
 
@@ -348,14 +277,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void socketAuthentication() {
 
             socket = Sockets.getInstance();
-
             // handle new alarm event
             socket.on("NEW_ALARM_EVENT", args -> {
                 // display msg in log
                 Log.e("NEW_ALARM_EVENT","");
+                // get  received JSON object
+                JSONObject jsonObject = (JSONObject)args[0];
+                // json object to send first gps coordinates
+                JSONObject obj = new JSONObject();
                 if(args != null)
+                         try {
+                             // Store alarm id
+                             last_alarm_id = jsonObject.getString("alarm_id");// get JSON object
+                            obj.put("latitude",lastLocation.getLatitude());
+                            obj.put("longitude",lastLocation.getLongitude());
+                             // sent first coordinates
+                            socket.emit("POSITION_CHANGE_EVENT", obj);
+                         } catch (JSONException e) {
+                            e.printStackTrace();
+                    }
                     // change Bottom sheet content
-                    setBottomSheetContent("newAlarm",(JSONObject)args[0]);
+                    setBottomSheetContent("newAlarm",jsonObject);
+                    // show bottom sheet
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
 
             }).on("CITIZEN_POSITION_CHANGE_EVENT", args -> {
 
@@ -390,7 +335,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("token",ConfigClass.token);
-                    socket.emit("CITIZEN_AUNTENTICATION_EVENT", obj);
+                    socket.emit("DRIVER_AUNTENTICATION_EVENT", obj);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -398,6 +343,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
 
         socket.connect();
+        Log.e("socket","Connected");
 
     }
 

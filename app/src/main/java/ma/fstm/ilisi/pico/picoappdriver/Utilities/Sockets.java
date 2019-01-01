@@ -13,7 +13,7 @@ public class Sockets {
     public synchronized static Socket getInstance(){
         if(mysocket == null){
             try {
-                mysocket = IO.socket("http://"+PicoWebRestClient.IPAddr+":9090?userType=CITIZEN_SOCKET_TYPE");
+                mysocket = IO.socket("http://"+PicoWebRestClient.IPAddr+":9090?userType=DRIVER_SOCKET_TYPE");
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
