@@ -112,13 +112,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         isAmbBooked = false ;
 
+        // get bs behavior
         sheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
 
-       Button  bs_btn_book = findViewById(R.id.bs_Book);
         // once the app is launched close the bottom sheet
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-       bs_btn_book.setOnClickListener(v -> {
+        // get positive button from bottom sheet
+       Button  bs_btn_positive = findViewById(R.id.bs_Book);
+        // get positive button from bottom sheet
+        Button  bs_btn_negative = findViewById(R.id.bs_Cancel);
+
+        // on button positive click
+        bs_btn_positive.setOnClickListener(v -> {
            // see if the button text equals to Approve
            if(((Button)v).getText().equals("Approve")){
                // object to send alarm id in
@@ -141,6 +147,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                }
            }
        });
+        // on button negative click
+        bs_btn_negative.setOnClickListener(v->{
+            // see if the button text equals to Reject
+            if(((Button)v).getText().equals("Reject")){
+                // show confirmation dialog
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Reject request")
+                        .setMessage("Do you really want to reject this request ?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            // object to send alarm id in
+                            JSONObject obj = new JSONObject();
+                            try {
+                                if(last_alarm_id != null){
+                                    obj.put("alarm_id",last_alarm_id);
+                                    // send data
+                                    socket.emit("REJECTED_REQUEST_EVENT",  obj);
+
+                                    if(citizendata != null){
+                                        // change bottom sheet content
+                                        setBottomSheetContent("onMission",citizendata);
+                                        // set state of bottom sheet
+                                        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }).setNegativeButton("No",((dialog, which) -> {
+
+                        }))
+                        .show());
+
+            }
+        });
+
         /**
          * bottom sheet state change listener
          * we are changing button text when sheet changed state

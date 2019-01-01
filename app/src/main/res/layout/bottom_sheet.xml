@@ -141,7 +141,6 @@
             android:layout_marginEnd="173dp"
             android:layout_marginRight="173dp"
             android:background="@color/colorNoInternetGradCenterH"
-            android:enabled="false"
             android:foreground="?attr/selectableItemBackground"
             android:text="Cancel"
             android:textColor="#fff" />
