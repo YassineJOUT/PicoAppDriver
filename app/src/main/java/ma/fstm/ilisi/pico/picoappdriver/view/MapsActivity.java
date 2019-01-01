@@ -77,6 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker targetMarker;
     private Driver driver;
 
+    private JSONObject citizendata;
     DirectionsViewModel directionsViewModel;
     //HospitalsViewModel hospitalsViewModel;
     //AmbulanceViewModel ambulanceViewModel;
@@ -118,8 +119,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
        bs_btn_book.setOnClickListener(v -> {
-           Log.e("Ambulance booked","A");
+           // see if the button text equals to Approve
+           if(((Button)v).getText().equals("Approve")){
+               // object to send alarm id in
+               JSONObject obj = new JSONObject();
+               try {
+                   if(last_alarm_id != null){
+                       obj.put("alarm_id",last_alarm_id);
+                       // send data
+                       socket.emit("ACCEPTED_REQUEST_EVENT",  obj);
 
+                       if(citizendata != null){
+                           // change bottom sheet content
+                           setBottomSheetContent("onMission",citizendata);
+                           // set state of bottom sheet
+                           sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                       }
+                   }
+               } catch (JSONException e) {
+                   e.printStackTrace();
+               }
+           }
        });
         /**
          * bottom sheet state change listener
@@ -296,7 +316,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                          } catch (JSONException e) {
                             e.printStackTrace();
                     }
-                    // change Bottom sheet content
+                    // store received info
+                    citizendata = jsonObject;
+                     // change Bottom sheet content
                     setBottomSheetContent("newAlarm",jsonObject);
                     // show bottom sheet
                     sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
