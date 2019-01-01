@@ -1,0 +1,24 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=28:B6:CF:96:9C:DA:52:EB:58:EC:A0:96:8C:C8:DA:09:DE:2D:1D:13%3Bma.fstm.ilisi.pico.picomobile.View
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    28:B6:CF:96:9C:DA:52:EB:58:EC:A0:96:8C:C8:DA:09:DE:2D:1D:13
+
+    SHA-1 certificate fingerprint:
+    28:B6:CF:96:9C:DA:52:EB:58:EC:A0:96:8C:C8:DA:09:DE:2D:1D:13
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/PicoMapsApiKey</string>
+</resources>
