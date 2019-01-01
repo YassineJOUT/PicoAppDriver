@@ -164,13 +164,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     obj.put("alarm_id",last_alarm_id);
                                     // send data
                                     socket.emit("REJECTED_REQUEST_EVENT",  obj);
+                                    // set state of bottom sheet to hidden
+                                    sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                                    if(citizendata != null){
-                                        // change bottom sheet content
-                                        setBottomSheetContent("onMission",citizendata);
-                                        // set state of bottom sheet
-                                        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                                    }
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -180,6 +176,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }))
                         .show());
 
+            }// see if button text equals to fake alarm
+            else if(((Button)v).getText().equals("Fake Alarm")){
+                // show confirmation dialog
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Fake alarm")
+                        .setMessage("Do you really want to declare this request as a fake alarm ?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            // object to send alarm id in
+                            JSONObject obj = new JSONObject();
+                            try {
+                                if(last_alarm_id != null){
+                                    obj.put("alarm_id",last_alarm_id);
+                                    // send data
+                                    socket.emit("FAKE_ALARM_EVENT",  obj);
+                                        // set state of bottom sheet to hidden
+                                        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }).setNegativeButton("No",((dialog, which) -> {
+
+                        }))
+                        .show());
             }
         });
 
