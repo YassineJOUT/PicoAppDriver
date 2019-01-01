@@ -434,16 +434,50 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // hide bottom sheet
                 sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             }).on("BAD_REQUEST_EVENT", args -> {
-
-
+                // show dialog
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Bad request")
+                        .setMessage("This was a bad request")
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                        })
+                        .show());
+                // hide bottom sheet
+                sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             }).on("SUCCESSFUL_FAKE_ALARM_DECLARATION_EVENT", args -> {
-
+                // show dialog
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Fake alarm success")
+                        .setMessage("Fake alarm was declared successfully!")
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                        })
+                        .show());
+                // hide bottom sheet
+                sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             }).on("ALARM_NOT_FOUND_EVENT", args -> {
-
-
+                // show dialog
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Alarm not found")
+                        .setMessage("This request does not exist anymore!")
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                        })
+                        .show());
+                // hide bottom sheet
+                sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             }).on("UNAUTHORIZED_MISSION_COMPLETION_EVENT", args -> {
-
+                // show dialog
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Mission accomplished unauthorized")
+                        .setMessage("Unauthorized action!")
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                        })
+                        .show());
+                // hide bottom sheet
+                sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             }).on("DRIVER_AUTH_SUCCESS_EVENT", args -> {
 
