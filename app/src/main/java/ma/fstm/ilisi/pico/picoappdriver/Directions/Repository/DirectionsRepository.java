@@ -58,8 +58,8 @@ public class DirectionsRepository {
     public LiveData<String[]> getPolyline(Direction direction){
         MutableLiveData<String[]> polyline = new MutableLiveData<>();
         String[] polylineArray = null;
-        Log.e("Key DirectionStatus : ",direction.getStatus());
         if(direction != null && direction.getStatus().equals("OK")){
+            Log.e("Key DirectionStatus : ",direction.getStatus());
             int count = direction.getRoutes().get(0).getLegs().get(0).getSteps().size();
             Step[] steps = direction.getRoutes().get(0).getLegs().get(0).getSteps().toArray(new Step[count]);
             polylineArray = new String[count];

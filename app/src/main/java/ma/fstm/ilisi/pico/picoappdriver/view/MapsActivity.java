@@ -125,83 +125,88 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // on button positive click
         bs_btn_positive.setOnClickListener(v -> {
-           // see if the button text equals to Approve
-           if(((Button)v).getText().equals("Approve")){
+            // Event to handle
+            String event = null ;
+            // see if the button text equals to Approve
+            if(((Button)v).getText().equals("Approve")){
+                event = "ACCEPTED_REQUEST_EVENT";
+                if(citizendata != null){
+                    // change bottom sheet content
+                    setBottomSheetContent("onMission",citizendata);
+                    // set state of bottom sheet to collapsed
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }// see if button text equals to Mission accomplished
+            else if(((Button)v).getText().equals("Mission accomplished")){
+                event = "MISSION_ACCOMPLISHED_EVENT";
+                if(citizendata != null){
+                    // set state of bottom sheet to hidden
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                }
+            }
+
                // object to send alarm id in
                JSONObject obj = new JSONObject();
                try {
                    if(last_alarm_id != null){
                        obj.put("alarm_id",last_alarm_id);
                        // send data
-                       socket.emit("ACCEPTED_REQUEST_EVENT",  obj);
+                       socket.emit(event,  obj);
 
-                       if(citizendata != null){
-                           // change bottom sheet content
-                           setBottomSheetContent("onMission",citizendata);
-                           // set state of bottom sheet
-                           sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                       }
                    }
                } catch (JSONException e) {
                    e.printStackTrace();
                }
-           }
+
        });
         // on button negative click
         bs_btn_negative.setOnClickListener(v->{
+            // Event to handle
+            String event = null ;
+            // dialog title
+            String dialogTitle = null;
+            // dialog message
+            String dialogMessage = null;
             // see if the button text equals to Reject
             if(((Button)v).getText().equals("Reject")){
-                // show confirmation dialog
-                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Reject request")
-                        .setMessage("Do you really want to reject this request ?")
-                        .setPositiveButton("Yes", (dialog, which) -> {
-                            // object to send alarm id in
-                            JSONObject obj = new JSONObject();
-                            try {
-                                if(last_alarm_id != null){
-                                    obj.put("alarm_id",last_alarm_id);
-                                    // send data
-                                    socket.emit("REJECTED_REQUEST_EVENT",  obj);
-                                    // set state of bottom sheet to hidden
-                                    sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }).setNegativeButton("No",((dialog, which) -> {
-
-                        }))
-                        .show());
+               event = "REJECTED_REQUEST_EVENT";
+               dialogTitle = "Reject request";
+               dialogMessage = "Do you really want to reject this request ?";
 
             }// see if button text equals to fake alarm
             else if(((Button)v).getText().equals("Fake Alarm")){
-                // show confirmation dialog
-                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Fake alarm")
-                        .setMessage("Do you really want to declare this request as a fake alarm ?")
-                        .setPositiveButton("Yes", (dialog, which) -> {
-                            // object to send alarm id in
-                            JSONObject obj = new JSONObject();
-                            try {
-                                if(last_alarm_id != null){
-                                    obj.put("alarm_id",last_alarm_id);
-                                    // send data
-                                    socket.emit("FAKE_ALARM_EVENT",  obj);
-                                        // set state of bottom sheet to hidden
-                                        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }).setNegativeButton("No",((dialog, which) -> {
-
-                        }))
-                        .show());
+                event = "FAKE_ALARM_EVENT";
+                dialogTitle = "Fake alarm";
+                dialogMessage = "Do you really want to declare this request as a fake alarm ?";
             }
+
+            String finalDialogTitle = dialogTitle;
+            String finalEvent = event;
+            String finalDialogMessage = dialogMessage;
+            // show confirmation dialog
+            MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(finalDialogTitle)
+                    .setMessage(finalDialogMessage)
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // object to send alarm id in
+                        JSONObject obj = new JSONObject();
+                        try {
+                            if(last_alarm_id != null){
+                                obj.put("alarm_id",last_alarm_id);
+                                // send data
+                                socket.emit(finalEvent,  obj);
+                                // set state of bottom sheet to hidden
+                                sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }).setNegativeButton("No",((dialog, which) -> {
+
+                    }))
+                    .show());
         });
 
         /**
@@ -390,13 +395,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }).on("CITIZEN_POSITION_CHANGE_EVENT", args -> {
 
                 JSONObject obj = (JSONObject)args[0];
-                DrawDriverPosition(obj);
+               // DrawDriverPosition(obj);
 
             }).on("CITIZEN_FEEDBACK_EVENT", args -> {
-
+                // get received data
+                JSONObject obj = (JSONObject)args[0];
+                String percentage = "";
+                String comment = "";
+                try {
+                    // get percentage
+                     percentage = obj.getString("percentage");
+                    // get comment
+                    comment = obj.getString("comment");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String finalPercentage = percentage;
+                String finalComment = comment;
+                // show dialog with the received feed back
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Feed back")
+                        .setMessage("This is the feedback given by the last citizen; percentage : "
+                                +finalPercentage+", comment : "+finalComment+"")
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                        })
+                        .show());
 
             }).on("CANCEL_ALARM_EVENT", args -> {
-
+                MapsActivity.this.runOnUiThread(() -> new AlertDialog.Builder(MapsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Alarm canceled")
+                        .setMessage("This request has been canceled by ots sender")
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                        })
+                        .show());
 
             }).on("BAD_REQUEST_EVENT", args -> {
 
