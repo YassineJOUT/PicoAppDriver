@@ -2,7 +2,11 @@ package ma.fstm.ilisi.pico.picoappdriver.view;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,10 +15,13 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -64,7 +71,7 @@ import ma.fstm.ilisi.pico.picoappdriver.Utilities.Sockets;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
-        LocationListener, GoogleMap.OnMapClickListener,
+        LocationListener,
         GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
@@ -159,6 +166,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                }
 
        });
+
+
         // on button negative click
         bs_btn_negative.setOnClickListener(v->{
             // Event to handle
@@ -390,12 +399,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     setBottomSheetContent("newAlarm",jsonObject);
                     // show bottom sheet
                     sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    sendNotification();
 
 
             }).on("CITIZEN_POSITION_CHANGE_EVENT", args -> {
 
                 JSONObject obj = (JSONObject)args[0];
-               // DrawDriverPosition(obj);
+                DrawDriverPosition(obj);
+                try {
+                    ambulanceMarker = mMap.addMarker(
+                            new MarkerOptions()
+                                    .position(new LatLng(obj.getDouble("latitude"), obj.getDouble("longitude")))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointer50x50)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }).on("CITIZEN_FEEDBACK_EVENT", args -> {
                 // get received data
@@ -500,6 +518,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.e("socket","Connected");
 
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -650,7 +669,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         lastLocation = locationManager.getLastKnownLocation(locationProvider);
         // mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude())).title("Myloc"));
-        mMap.setOnMapClickListener(this);
+
 
        // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(, 15));
         // get hospitals view model
@@ -675,7 +694,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 lastLocation.setLatitude(33.699995 );
                 lastLocation.setLongitude(-7.362469);}
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), ConfigClass.zoomStreets-0.5f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), ConfigClass.zoomStreets-0.5f));
 
 
             //socketAuthentication();
@@ -728,22 +748,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    @Override
-    public void onMapClick(LatLng latLng) {
-     /*   if (targetMarker != null) targetMarker.remove();
-
-        Location loc = new Location("");
-        loc.setLatitude(latLng.latitude);
-        loc.setLongitude(latLng.longitude);
-        if (lastLocation == null) {
-
-            lastLocation = mMap.getMyLocation();
-        }
-        double dist = lastLocation.distanceTo(loc);
-        Log.e("Distance ",dist+"");
-        */
-
-    }
     @Override
     public boolean onMarkerClick(Marker marker) {
 
@@ -808,23 +812,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return super.onOptionsItemSelected(item);
         }
     }
+    public void sendNotification() {
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this);
+
+        //Create the intent that’ll fire when the user taps the notification//
+
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, this.getIntent(), 0);
+
+        mBuilder.setContentIntent(pendingIntent);
+
+        mBuilder.setSmallIcon(R.drawable.amb1);
+        mBuilder.setContentTitle("New Request");
+        mBuilder.setContentText("There is a new alarm");
+
+        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        mBuilder.setSound(uri);
+
+
+        NotificationManager mNotificationManager =
+
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(001, mBuilder.build());
+    }
 
 }
-    /*private void UpdateLocation(double currentLat, double currentLon) {
-        LatLng pos = new LatLng(currentLat, currentLon);
 
-        Geocoder geocoder = new Geocoder(getApplicationContext());
 
-        try {
-            List<Address> lstAddr = geocoder.getFromLocation(currentLat, currentLon, 1);
-            String str = lstAddr.get(0).getLocality();
-            str += lstAddr.get(0).getLocality();
-            mMap.addMarker(new MarkerOptions().position(pos).title(str));
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, ConfigClass.zoomStreets));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }*/

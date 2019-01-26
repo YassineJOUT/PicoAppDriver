@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">PicoAppDriver</string>
-    <string name="PicoMapsApiKey"></string>
+    <string name="PicoMapsApiKey">AIzaSyCKbz6u2K6aGHpoocmCzgj3VKIqvPgHO-E</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps2">Pico</string>

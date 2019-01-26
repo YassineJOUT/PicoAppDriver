@@ -37,16 +37,13 @@ public class DirectionsRepository {
     public LiveData<Direction> getDirectionTo(String origin, String destination, String key){
         final MutableLiveData<Direction> data = new MutableLiveData<>();
         directionServiceApi.getDirectionTo(origin,destination, key).enqueue(new Callback<Direction>() {
-
             @Override
             public void onResponse(Call<Direction> call, Response<Direction> response) {
                 if(response.isSuccessful()){
                     Log.e("OnResponse ","OK");
                     data.setValue(response.body());
                 }
-
             }
-
             @Override
             public void onFailure(Call<Direction> call, Throwable t) {
                 data.setValue(null );
@@ -61,7 +58,8 @@ public class DirectionsRepository {
         if(direction != null && direction.getStatus().equals("OK")){
             Log.e("Key DirectionStatus : ",direction.getStatus());
             int count = direction.getRoutes().get(0).getLegs().get(0).getSteps().size();
-            Step[] steps = direction.getRoutes().get(0).getLegs().get(0).getSteps().toArray(new Step[count]);
+            Step[] steps = direction.getRoutes().get(0).
+                    getLegs().get(0).getSteps().toArray(new Step[count]);
             polylineArray = new String[count];
             for(int i=0;i<count;i++){
                 polylineArray[i] = steps[i].getPolyline().getPoints();
